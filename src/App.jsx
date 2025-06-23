@@ -39,7 +39,8 @@ export default function App() {
       <Routes>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/subadmin" element={<SubAdminPanel />} />
-        <Route path="/user" element={<LandingPage />} />
+        <Route path="/user" element={<UserPanel />} />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
     </Router>
   );
