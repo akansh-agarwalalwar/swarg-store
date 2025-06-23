@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import AdminPanel from './admin/AdminPanel'
 import SubAdminPanel from './subadmin/SubAdminPanel'
 import UserPanel from './user/UserPanel'
+import AuthForm from './components/AuthForm'
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ function LandingPage() {
       <h1 className="text-4xl font-extrabold text-blue-700 mb-10 drop-shadow">Welcome to Swarg Store</h1>
       <div className="flex flex-col sm:flex-row gap-8">
         <button
-          onClick={() => navigate('/admin')}
+          onClick={() => navigate('/login/admin')}
           className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-10 py-6 rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transition border-4 border-white hover:border-blue-200"
         >
           Go to Admin Panel
         </button>
         <button
-          onClick={() => navigate('/subadmin')}
+          onClick={() => navigate('/login/subadmin')}
           className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-10 py-6 rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transition border-4 border-white hover:border-green-200"
         >
           Go to Subadmin Panel
@@ -40,6 +41,8 @@ export default function App() {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/subadmin" element={<SubAdminPanel />} />
         <Route path="/user" element={<UserPanel />} />
+        <Route path="/login/admin" element={<AuthForm role="admin" />} />
+        <Route path="/login/subadmin" element={<AuthForm role="subadmin" />} />
         <Route path="/" element={<LandingPage />} />
       </Routes>
     </Router>
