@@ -11,7 +11,7 @@ export default function AuthForm({ role }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/${role}/login`, {
+      const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
