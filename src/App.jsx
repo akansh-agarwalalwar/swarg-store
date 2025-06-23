@@ -23,7 +23,7 @@ function LandingPage() {
           Go to Subadmin Panel
         </button>
         <button
-          onClick={() => navigate('/user')}
+          onClick={() => navigate('/')}
           className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-10 py-6 rounded-2xl text-2xl font-bold shadow-lg hover:scale-105 transition border-4 border-white hover:border-purple-200"
         >
           Go to User Panel
