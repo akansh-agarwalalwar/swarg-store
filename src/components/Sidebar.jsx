@@ -6,16 +6,19 @@ const adminNavItems = [
   { key: 'all', label: 'All Posted IDs', icon: '📋' },
   { key: 'manageSubadmins', label: 'Manage Subadmins', icon: '🛠️' },
   { key: 'myPosted', label: 'My Posted IDs', icon: '🗂️' },
+  { key: 'youtube', label: 'YouTube Videos', icon: '🎥' },
 ];
 
 const userNavItems = [
   { key: 'home', label: 'Home', icon: '🏠' },
   { key: 'all', label: 'All Products', icon: '🛒' },
+  { key: 'videos', label: 'Videos', icon: '🛒' },
 ];
 
 const subAdminNavItems = [
   { key: 'home', label: 'Home', icon: '🏠' },
   { key: 'all', label: 'All Products', icon: '🛒' },
+  { key: 'youtube', label: 'YouTube Videos', icon: '🎥' },
 ];
 
 export default function Sidebar({ current, onSectionChange, mode = 'admin' }) {
@@ -34,7 +37,7 @@ export default function Sidebar({ current, onSectionChange, mode = 'admin' }) {
       {/* Sidebar */}
       <aside
         className={`
-          h-screen w-64 bg-gradient-to-b from-green-600 to-blue-600 text-white flex flex-col shadow-xl fixed left-0 top-0 z-20
+          h-screen w-64 bg-gradient-to-b from-blue-600 to-indigo-600 text-white flex flex-col shadow-xl fixed left-0 top-0 z-20
           transition-transform duration-300
           md:translate-x-0
           ${open ? 'translate-x-0' : '-translate-x-full'}

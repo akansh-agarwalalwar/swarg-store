@@ -1,13 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import SubAdminActivity from './SubAdminActivity';
 import AllPostedIDs from './AllPostedIDs';
 import Card from '../components/Card';
 import ManageSubadmins from './ManageSubadmins';
 import MyPostedIDs from './MyPostedIDs';
+import YouTubeVideos from '../components/YouTubeVideos';
 
 function AdminPanel() {
   const [section, setSection] = useState('subadmins');
+  const navigate = useNavigate();
   // Dummy data for sub admins
   const [subAdmins, setSubAdmins] = useState([
     { id: 1, username: 'subadmin1', name: 'Sub Admin 1', email: 'sub1@example.com' },
@@ -33,10 +36,24 @@ function AdminPanel() {
     }));
   };
 
+  // Logout handler
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
+
   return (
     <div className="flex min-h-[80vh] gap-8">
       <Sidebar current={section} onSectionChange={setSection} />
       <div className="flex-1 py-8">
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={handleLogout}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow hover:scale-105 transition text-base sm:text-lg"
+          >
+            Logout
+          </button>
+        </div>
         {section === 'subadmins' && <SubAdminActivity />}
         {section === 'create' && (
           <Card header="Create BGMI ID to Sell" className="max-w-2xl mx-auto">
@@ -73,6 +90,7 @@ function AdminPanel() {
           />
         )}
         {section === 'myPosted' && <MyPostedIDs />}
+        {section === 'youtube' && <YouTubeVideos mode="admin" />}
       </div>
     </div>
   );

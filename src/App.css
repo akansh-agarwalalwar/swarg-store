@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  background: linear-gradient(135deg, #e0f2fe 0%, #c7d2fe 100%); /* blue-100 to indigo-100 */
+  min-height: 100vh;
 }
 
 .logo {
@@ -12,10 +14,10 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #3b82f6aa); /* blue-500 */
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em #6366f1aa); /* indigo-500 */
 }
 
 @keyframes logo-spin {
@@ -38,7 +40,7 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: #64748b; /* slate-500 */
 }
 
 @keyframes scale-in {
@@ -52,19 +54,19 @@
 /* Custom scrollbar for theme */
 ::-webkit-scrollbar {
   width: 12px;
-  background: #e0f2fe;
+  background: #e0f2fe; /* blue-100 */
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #38bdf8 0%, #22d3ee 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); /* blue-500 to indigo-500 */
   border-radius: 8px;
   border: 2px solid #e0f2fe;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); /* blue-600 to indigo-600 */
 }
 
 /* For Firefox */
 html {
   scrollbar-width: thin;
-  scrollbar-color: #38bdf8 #e0f2fe;
+  scrollbar-color: #3b82f6 #e0f2fe;
 }

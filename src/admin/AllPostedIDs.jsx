@@ -80,7 +80,7 @@ export default function AllPostedIDs({ search = '' }) {
             </div>
             <div>
               <button
-                className={`w-full py-2 rounded-full font-bold text-white transition text-sm sm:text-base ${row.status === 'sold' ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-blue-500 hover:scale-105'}`}
+                className={`w-full py-2 rounded-full font-bold text-white transition text-sm sm:text-base ${row.status === 'sold' ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-105'}`}
                 disabled={row.status === 'sold'}
               >
                 {row.status === 'sold' ? 'Sold Out' : 'Buy Now'}

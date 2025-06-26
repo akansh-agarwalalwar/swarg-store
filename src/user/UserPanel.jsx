@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import AllPostedIDs from './AllPostedId';
+import YouTubeVideoGallery from '../components/YouTubeVideoGallery';
 // import logo from './assets/react.svg'; // Replace with your brand logo if available
 
 function UserPanel() {
   const [section, setSection] = useState('home');
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('all');
+  const [role, setRole] = useState('all');
+  const [price, setPrice] = useState([0, 2000]);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -31,18 +35,59 @@ function UserPanel() {
         {section === 'all' && (
           <div className="max-w-screen-lg mx-auto">
             <h2 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700">All Products</h2>
-            <div className="mb-8">
+            <div className="mb-8 bg-white rounded-2xl shadow p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
               <input
                 type="text"
                 placeholder="Search by title or admin..."
-                className="w-full border border-blue-200 rounded px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 outline-none transition text-base sm:text-lg"
+                className="border border-blue-200 rounded px-3 sm:px-4 py-2 sm:py-3 focus:ring-2 focus:ring-blue-400 outline-none transition text-base sm:text-lg w-full sm:w-1/3"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
+              <select
+                className="border border-blue-200 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none text-base w-full sm:w-40"
+                value={status}
+                onChange={e => setStatus(e.target.value)}
+              >
+                <option value="all">All Status</option>
+                <option value="available">Available</option>
+                <option value="sold">Sold</option>
+              </select>
+              {/* <select
+                className="border border-blue-200 rounded px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none text-base w-full sm:w-40"
+                value={role}
+                onChange={e => setRole(e.target.value)}
+              >
+                <option value="all">All Roles</option>
+                <option value="Admin">Admin</option>
+                <option value="Sub Admin">Sub Admin</option>
+              </select> */}
+              <div className="flex flex-col items-center w-full sm:w-56">
+                <label className="text-xs text-blue-700 font-semibold mb-1">Price Range</label>
+                <div className="flex items-center gap-2 w-full">
+                  <input
+                    type="range"
+                    min={0}
+                    max={2000}
+                    value={price[0]}
+                    onChange={e => setPrice([+e.target.value, price[1]])}
+                    className="w-1/2 accent-blue-600"
+                  />
+                  <input
+                    type="range"
+                    min={0}
+                    max={2000}
+                    value={price[1]}
+                    onChange={e => setPrice([price[0], +e.target.value])}
+                    className="w-1/2 accent-blue-600"
+                  />
+                </div>
+                <div className="text-xs text-gray-500 mt-1">₹{price[0]} - ₹{price[1]}</div>
+              </div>
             </div>
-            <AllPostedIDs search={search} />
+            <AllPostedIDs search={search} status={status} role={role} price={price} />
           </div>
         )}
+        <YouTubeVideoGallery />
       </div>
     </div>
   );

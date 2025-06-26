@@ -2,9 +2,9 @@
 export default function Button({ children, onClick, type = 'button', variant = 'primary', size = 'md', className = '', ...props }) {
   let base = 'rounded-full font-bold shadow transition focus:outline-none focus:ring-2 focus:ring-offset-2';
   let variants = {
-    primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-105',
-    danger: 'bg-gradient-to-r from-pink-500 to-red-500 text-white hover:scale-105',
-    success: 'bg-gradient-to-r from-green-400 to-blue-500 text-white hover:scale-105',
+    primary: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:scale-105',
+    danger: 'bg-gradient-to-r from-pink-500 to-blue-500 text-white hover:scale-105',
+    success: 'bg-gradient-to-r from-teal-400 to-blue-500 text-white hover:scale-105',
     outline: 'bg-white text-blue-700 border border-blue-200 hover:bg-blue-50',
   };
   let sizes = {
@@ -22,4 +22,4 @@ export default function Button({ children, onClick, type = 'button', variant = '
       {children}
     </button>
   );
-} 
+}
