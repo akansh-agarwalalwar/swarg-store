@@ -92,9 +92,9 @@ function SubAdminPanel() {
   };
 
   return (
-    <div className="flex min-h-[80vh] gap-8 bg-gray-900">
+    <div className="flex h-screen gap-8 bg-gray-900">
       <Sidebar current={section} onSectionChange={setSection} mode="subadmin" />
-      <div className="flex-1 py-8">
+      <div className="flex-1 py-8 overflow-y-auto">
         <div className="flex justify-end mb-6">
           <button
             onClick={handleLogout}

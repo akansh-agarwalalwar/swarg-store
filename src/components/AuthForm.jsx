@@ -1,6 +1,16 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Utility to check for suspicious input (NoSQL/SQL injection patterns)
+function isInputSafe(str) {
+  if (!str) return true;
+  // Disallow MongoDB/SQL special chars and operators
+  const blacklist = /[${}<>;\[\]'"|&]/;
+  if (blacklist.test(str)) return false;
+  // Disallow leading $ (MongoDB operator)
+  if (str.trim().startsWith('$')) return false;
+  return true;
+}
 
 export default function AuthForm({ role }) {
   const [username, setUsername] = useState('');
@@ -18,25 +28,28 @@ export default function AuthForm({ role }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    // Client-side input validation
+    if (!isInputSafe(username) || !isInputSafe(password)) {
+      setError('Invalid input detected.');
+      return;
+    }
     try {
       const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: username.trim(), password: password.trim() })
       });
       const data = await res.json();
-      console.log('Login response:', data);
-      if (!res.ok) throw new Error(data.message || 'Login failed');
+      if (!res.ok) throw new Error('Login failed');
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.role);
-      console.log('Saved token:', localStorage.getItem('token'));
       setTimeout(() => {
         if (data.role === 'admin') navigate('/admin');
         else if (data.role === 'subadmin') navigate('/subadmin');
         else navigate('/');
-      }, 200); // Delay navigation
+      }, 200);
     } catch (err) {
-      setError(err.message);
+      setError('Login failed');
     }
   };
 
@@ -46,18 +59,23 @@ export default function AuthForm({ role }) {
     setLoading(true);
     setResetMessage('');
     setError('');
+    if (!isInputSafe(resetEmail)) {
+      setError('Invalid input detected.');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/request-password-reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resetEmail })
+        body: JSON.stringify({ email: resetEmail.trim() })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to send OTP');
+      if (!res.ok) throw new Error('Failed to send OTP');
       setResetStep(2);
       setResetMessage('OTP sent to your email.');
     } catch (err) {
-      setError(err.message);
+      setError('Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -68,18 +86,23 @@ export default function AuthForm({ role }) {
     setLoading(true);
     setResetMessage('');
     setError('');
+    if (!isInputSafe(resetOtp)) {
+      setError('Invalid input detected.');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resetEmail, otp: resetOtp })
+        body: JSON.stringify({ email: resetEmail.trim(), otp: resetOtp.trim() })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'OTP verification failed');
+      if (!res.ok) throw new Error('OTP verification failed');
       setResetStep(3);
       setResetMessage('OTP verified. Please enter your new password.');
     } catch (err) {
-      setError(err.message);
+      setError('OTP verification failed');
     } finally {
       setLoading(false);
     }
@@ -90,14 +113,19 @@ export default function AuthForm({ role }) {
     setLoading(true);
     setResetMessage('');
     setError('');
+    if (!isInputSafe(resetNewPassword)) {
+      setError('Invalid input detected.');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resetEmail, otp: resetOtp, newPassword: resetNewPassword })
+        body: JSON.stringify({ email: resetEmail.trim(), otp: resetOtp.trim(), newPassword: resetNewPassword.trim() })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Password reset failed');
+      if (!res.ok) throw new Error('Password reset failed');
       setResetMessage('Password reset successful! You can now log in.');
       setShowReset(false);
       setResetStep(1);
@@ -105,7 +133,7 @@ export default function AuthForm({ role }) {
       setResetOtp('');
       setResetNewPassword('');
     } catch (err) {
-      setError(err.message);
+      setError('Password reset failed');
     } finally {
       setLoading(false);
     }

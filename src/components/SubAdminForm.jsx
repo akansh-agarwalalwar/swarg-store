@@ -18,7 +18,7 @@ export default function SubAdminForm({ onSuccess, onClose }) {
     setSuccess('');
     try {
       const token = localStorage.getItem('token');
-      console.log(token)
+      // console.log(token)
       const res = await fetch('https://swarg-store-backend.onrender.com/api/subadmin/register', {
         method: 'POST',
         headers: {

@@ -75,6 +75,7 @@ export default function TelegramLinkCard({ panelMode }) {
         },
       });
       const data = await res.json();
+      alert("Deleted Successfully")
       if (!res.ok) throw new Error(data.error || 'Failed to delete link');
       setLinks(links => links.filter(l => l._id !== id));
       setMessage('Telegram link deleted.');

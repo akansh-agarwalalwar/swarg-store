@@ -37,6 +37,45 @@ function AdminPanel() {
     }));
   };
 
+  // BGMI ID submit handler
+  const handleBgmiSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!bgmiForm.title || !bgmiForm.price || !bgmiForm.media) {
+      alert('Title, price, and media are required.');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('title', bgmiForm.title);
+    formData.append('price', bgmiForm.price);
+    formData.append('description', bgmiForm.description);
+    if (bgmiForm.media) {
+      if (bgmiForm.media.type && bgmiForm.media.type.startsWith('image/')) {
+        formData.append('image', bgmiForm.media);
+      } else if (bgmiForm.media.type && bgmiForm.media.type.startsWith('video/')) {
+        formData.append('video', bgmiForm.media);
+      } else {
+        alert('Unsupported media file type');
+        return;
+      }
+    }
+    try {
+      const res = await fetch('https://swarg-store-backend.onrender.com/api/ids/create', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to create BGMI ID');
+      alert('BGMI ID created successfully!');
+      setBgmiForm({ title: '', price: '', description: '', media: null });
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   // Logout handler
   const handleLogout = () => {
     localStorage.clear();
@@ -44,9 +83,9 @@ function AdminPanel() {
   };
 
   return (
-    <div className="flex min-h-[80vh] gap-8 bg-gray-900">
+    <div className="flex h-screen gap-8 bg-gray-900">
       <Sidebar current={section} onSectionChange={setSection} />
-      <div className="flex-1 py-8">
+      <div className="flex-1 py-8 overflow-y-auto p-4">
         <div className="flex justify-end mb-6">
           <button
             onClick={handleLogout}
@@ -58,7 +97,7 @@ function AdminPanel() {
         {section === 'subadmins' && <SubAdminActivity />}
         {section === 'create' && (
           <Card header={<span className="text-cyan-400">Create BGMI ID to Sell</span>} className="max-w-2xl mx-auto p-8">
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleBgmiSubmit} encType="multipart/form-data">
               <div>
                 <label className="block text-gray-300 font-semibold mb-1">Title</label>
                 <input type="text" name="title" placeholder="Title" className="w-full border border-cyan-700 rounded px-3 py-2 bg-gray-800 text-gray-100 focus:ring-2 focus:ring-cyan-400 outline-none transition" value={bgmiForm.title} onChange={handleBgmiChange} />
@@ -75,7 +114,7 @@ function AdminPanel() {
                 <label className="block text-gray-300 font-semibold mb-1">Photo/Video</label>
                 <input type="file" name="media" accept="image/*,video/*" className="w-full border border-cyan-700 rounded px-3 py-2 bg-gray-800 text-gray-100" onChange={handleBgmiChange} />
               </div>
-              <button type="button" className="w-full bg-gradient-to-r from-cyan-400 to-blue-600 text-gray-900 px-6 py-3 rounded-full font-bold shadow-lg hover:from-cyan-500 hover:to-blue-700 hover:scale-105 transition text-lg gaming-button">Create</button>
+              <button type="submit" className="w-full bg-gradient-to-r from-cyan-400 to-blue-600 text-gray-900 px-6 py-3 rounded-full font-bold shadow-lg hover:from-cyan-500 hover:to-blue-700 hover:scale-105 transition text-lg gaming-button">Create</button>
             </form>
           </Card>
         )}

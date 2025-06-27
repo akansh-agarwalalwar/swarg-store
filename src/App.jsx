@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import AdminPanel from './admin/AdminPanel'
 import SubAdminPanel from './subadmin/SubAdminPanel'
 import UserPanel from './user/UserPanel'
@@ -34,17 +34,94 @@ function LandingPage() {
   );
 }
 
+// JWT expiry check utility
+function isTokenExpired(token) {
+  if (!token) return true;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!payload.exp) return false;
+    const now = Math.floor(Date.now() / 1000);
+    return payload.exp < now;
+  } catch {
+    return true;
+  }
+}
+
+// Global error boundary
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    // Optionally log error
+    // console.error(error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div className="text-red-500 text-center py-20 font-bold text-2xl">Something went wrong. Please refresh the page.</div>;
+    }
+    return this.props.children;
+  }
+}
+
+// PrivateRoute for admin and subadmin
+function PrivateRoute({ children, role }) {
+  const token = localStorage.getItem('token');
+  let userRole = null;
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userRole = payload.role;
+    } catch (e) {}
+  }
+  // Check expiry
+  if (!token || userRole !== role || isTokenExpired(token)) {
+    localStorage.clear();
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
+// Force logout on route change if token expired
+function TokenExpiryWatcher() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && isTokenExpired(token)) {
+      localStorage.clear();
+      navigate('/', { replace: true });
+    }
+  }, [location, navigate]);
+  return null;
+}
+
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/subadmin" element={<SubAdminPanel />} />
-        <Route path="/user" element={<UserPanel />} />
-        <Route path="/login/admin" element={<AuthForm role="admin" />} />
-        <Route path="/login/subadmin" element={<AuthForm role="subadmin" />} />
-        <Route path="/" element={<LandingPage />} />
-      </Routes>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <TokenExpiryWatcher />
+        <Routes>
+          <Route path="/admin" element={
+            <PrivateRoute role="admin">
+              <AdminPanel />
+            </PrivateRoute>
+          } />
+          <Route path="/subadmin" element={
+            <PrivateRoute role="subadmin">
+              <SubAdminPanel />
+            </PrivateRoute>
+          } />
+          <Route path="/user" element={<UserPanel />} />
+          <Route path="/login/admin" element={<AuthForm role="admin" />} />
+          <Route path="/login/subadmin" element={<AuthForm role="subadmin" />} />
+          <Route path="/" element={<LandingPage />} />
+        </Routes>
+      </Router>
+    </ErrorBoundary>
   );
 }
