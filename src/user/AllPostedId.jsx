@@ -5,7 +5,7 @@ export default function AllPostedIDs({ search = '', status = 'all', role = 'all'
   const [allIDs, setAllIDs] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/ids')
+    fetch('https://swarg-store-backend.onrender.com/api/ids')
       .then(res => res.json())
       .then(data => setAllIDs(data))
       .catch(console.error);

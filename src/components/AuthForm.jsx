@@ -19,7 +19,7 @@ export default function AuthForm({ role }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/${role}/login`, {
+      const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -47,7 +47,7 @@ export default function AuthForm({ role }) {
     setResetMessage('');
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/${role}/request-password-reset`, {
+      const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/request-password-reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail })
@@ -69,7 +69,7 @@ export default function AuthForm({ role }) {
     setResetMessage('');
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/${role}/verify-otp`, {
+      const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail, otp: resetOtp })
@@ -91,7 +91,7 @@ export default function AuthForm({ role }) {
     setResetMessage('');
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/${role}/reset-password`, {
+      const res = await fetch(`https://swarg-store-backend.onrender.com/api/${role}/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail, otp: resetOtp, newPassword: resetNewPassword })
