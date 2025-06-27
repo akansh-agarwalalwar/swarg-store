@@ -55,7 +55,7 @@ export default function ManageSubadmins() {
   };
 
   return (
-    <Card header="Manage Sub Admins" className="max-w-3xl mx-auto mb-8 shadow-lg">
+    <Card header="Manage Sub Admins" className="max-w-3xl mx-auto mb-8 shadow-lg p-10">
       <div className="flex justify-end mb-4">
         <button
           className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full font-bold shadow hover:scale-105 transition text-base sm:text-lg"

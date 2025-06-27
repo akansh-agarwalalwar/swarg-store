@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import AllPostedIDs from './AllPostedId';
 import YouTubeVideoGallery from '../components/YouTubeVideoGallery';
-// import logo from './assets/react.svg'; // Replace with your brand logo if available
 
 function UserPanel() {
   const [section, setSection] = useState('home');

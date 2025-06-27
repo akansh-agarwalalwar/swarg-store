@@ -1,9 +1,10 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import AllPostedIDs from '../admin/MyPostedIDs';
 import Card from '../components/Card';
 import YouTubeVideos from '../components/YouTubeVideos';
+import TelegramLinkCard from '../components/TelegramLinkCard';
 
 function SubAdminPanel() {
   const [section, setSection] = useState('all');
@@ -16,6 +17,12 @@ function SubAdminPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/');
+  };
 
   const handleBgmiChange = (e) => {
     const { name, value, files } = e.target;
@@ -85,33 +92,41 @@ function SubAdminPanel() {
   };
 
   return (
-    <div className="flex min-h-[80vh] gap-8">
+    <div className="flex min-h-[80vh] gap-8 bg-gray-900">
       <Sidebar current={section} onSectionChange={setSection} mode="subadmin" />
       <div className="flex-1 py-8">
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={handleLogout}
+            className="bg-gradient-to-r from-cyan-400 to-blue-600 text-gray-900 px-6 py-2 rounded-full font-bold shadow-lg hover:from-cyan-500 hover:to-blue-700 hover:scale-105 transition text-base sm:text-lg gaming-button"
+          >
+            Logout
+          </button>
+        </div>
         {section === 'bgmi' && (
-          <Card header="Create BGMI ID to Sell" className="max-w-2xl mx-auto">
+          <Card header={<span className="text-cyan-400">Create BGMI ID to Sell</span>} className="max-w-2xl mx-auto p-8">
             <form className="space-y-6" onSubmit={handleSubmit} encType="multipart/form-data">
               <div>
-                <label className="block text-gray-700 font-semibold mb-1" htmlFor="title">Title</label>
+                <label className="block text-gray-300 font-semibold mb-1" htmlFor="title">Title</label>
                 <input
                   id="title"
                   type="text"
                   name="title"
                   placeholder="Title"
-                  className="w-full border border-purple-200 rounded px-3 py-2 focus:ring-2 focus:ring-purple-400 outline-none transition"
+                  className="w-full border border-cyan-700 rounded px-3 py-2 bg-gray-800 text-gray-100 focus:ring-2 focus:ring-cyan-400 outline-none transition"
                   value={bgmiForm.title}
                   onChange={handleBgmiChange}
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-semibold mb-1" htmlFor="price">Price</label>
+                <label className="block text-gray-300 font-semibold mb-1" htmlFor="price">Price</label>
                 <input
                   id="price"
                   type="number"
                   name="price"
                   placeholder="Price"
-                  className="w-full border border-purple-200 rounded px-3 py-2 focus:ring-2 focus:ring-purple-400 outline-none transition"
+                  className="w-full border border-cyan-700 rounded px-3 py-2 bg-gray-800 text-gray-100 focus:ring-2 focus:ring-cyan-400 outline-none transition"
                   value={bgmiForm.price}
                   onChange={handleBgmiChange}
                   required
@@ -120,25 +135,25 @@ function SubAdminPanel() {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-semibold mb-1" htmlFor="description">Description</label>
+                <label className="block text-gray-300 font-semibold mb-1" htmlFor="description">Description</label>
                 <textarea
                   id="description"
                   name="description"
                   placeholder="Description"
-                  className="w-full border border-purple-200 rounded px-3 py-2 focus:ring-2 focus:ring-purple-400 outline-none transition"
+                  className="w-full border border-cyan-700 rounded px-3 py-2 bg-gray-800 text-gray-100 focus:ring-2 focus:ring-cyan-400 outline-none transition"
                   value={bgmiForm.description}
                   onChange={handleBgmiChange}
                   rows={4}
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-semibold mb-1" htmlFor="media">Photo/Video</label>
+                <label className="block text-gray-300 font-semibold mb-1" htmlFor="media">Photo/Video</label>
                 <input
                   id="media"
                   type="file"
                   name="media"
                   accept="image/*,video/*"
-                  className="w-full border border-purple-200 rounded px-3 py-2"
+                  className="w-full border border-cyan-700 rounded px-3 py-2 bg-gray-800 text-gray-100"
                   onChange={handleBgmiChange}
                   required
                 />
@@ -147,18 +162,19 @@ function SubAdminPanel() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-full font-bold shadow hover:scale-105 transition text-lg"
+                className="w-full bg-gradient-to-r from-cyan-400 to-blue-600 text-gray-900 px-6 py-3 rounded-full font-bold shadow-lg hover:from-cyan-500 hover:to-blue-700 hover:scale-105 transition text-lg gaming-button"
               >
                 {loading ? 'Posting...' : 'Create'}
               </button>
 
-              {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
-              {success && <p className="text-green-600 mt-2 text-center">{success}</p>}
+              {error && <p className="text-red-400 mt-2 text-center">{error}</p>}
+              {success && <p className="text-green-400 mt-2 text-center">{success}</p>}
             </form>
           </Card>
         )}
         {section === 'all' && <AllPostedIDs />}
         {section === 'youtube' && <YouTubeVideos mode="subadmin" />}
+        {section === 'telegram' && <TelegramLinkCard panelMode="subadmin" />}
       </div>
     </div>
   );
