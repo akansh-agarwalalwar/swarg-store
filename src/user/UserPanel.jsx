@@ -2,6 +2,9 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import AllPostedIDs from './AllPostedId';
 import YouTubeVideoGallery from '../components/YouTubeVideoGallery';
+import Footer from '../Footer/Footer';
+import FAQ from '../Footer/FAQ';
+import HowItWorks from '../Footer/HowItWorks';
 
 function UserPanel() {
   const [section, setSection] = useState('home');
@@ -167,9 +170,9 @@ function UserPanel() {
               <div className="relative z-10">
                 <h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl mb-6">
                   <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    PREMIUM BGMI IDs
+                    PREMIUM IDs
                   </span>
-                  <span className="block text-red-400 mt-2">READY TO PLAY</span>
+                  {/* <span className="block text-red-400 mt-2">READY TO PLAY</span> */}
                 </h1>
                 <p className="mt-3 max-w-md mx-auto text-base text-gray-300 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
                   Discover the best BGMI accounts with rare skins, high ranks, and exclusive items. 
@@ -280,6 +283,9 @@ function UserPanel() {
           </div>
         )}
       </main>
+      {section === 'home' && <HowItWorks />}
+      {section === 'home' && <FAQ />}
+      <Footer />
     </div>
   );
 }
