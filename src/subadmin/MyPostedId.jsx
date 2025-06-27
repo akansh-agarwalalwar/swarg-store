@@ -1,82 +1,75 @@
+
+import { useState, useEffect } from 'react';
 import Card from '../components/Card';
-import React from 'react';
 
-// Dummy data for demonstration
-const initialIDs = [
-  {
-    id: 'BGMI-010',
-    title: 'My Pro BGMI ID',
-    media: [
-      { type: 'image', url: 'https://placehold.co/100x100' },
-    ],
-    price: 2000,
-    status: 'available',
-  },
-  {
-    id: 'BGMI-011',
-    title: 'Elite BGMI ID',
-    media: [
-      { type: 'image', url: 'https://placehold.co/100x100' },
-      { type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-    ],
-    price: 3500,
-    status: 'sold',
-  },
-];
+export default function AllPostedIDs() {
+  const [postedIDs, setPostedIDs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default function MyPostedIDs({ myIDs, setMyIDs }) {
-  const handleStatusChange = (idx, newStatus) => {
-    setMyIDs(ids => ids.map((id, i) => i === idx ? { ...id, status: newStatus } : id));
+  // Fetch posted IDs for the logged-in user
+  const fetchPostedIDs = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch('http://localhost:5000/api/ids/get-my-posted', {  // Adjust endpoint to your API
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch posted IDs');
+      setPostedIDs(data); // assuming data is array of posted IDs
+    } catch (err) {
+      console.error('Error fetching posted IDs:', err.message);
+      setPostedIDs([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    fetchPostedIDs();
+  }, []);
+
+  if (loading) return <p>Loading posted IDs...</p>;
+
+  if (postedIDs.length === 0) return <p>No posted IDs found.</p>;
+
   return (
-    <Card header="My Posted IDs" className="max-w-4xl mx-auto mb-8 shadow-lg">
-      {myIDs.length === 0 ? (
-        <div className="text-center text-gray-400 py-12">You have not posted any IDs yet.</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border rounded-lg bg-white shadow text-sm sm:text-base">
-            <thead>
-              <tr className="bg-blue-100 text-blue-800">
-                <th className="p-3 text-left">ID</th>
-                <th className="p-3 text-left">Title</th>
-                <th className="p-3 text-left">Media</th>
-                <th className="p-3 text-left">Price</th>
-                <th className="p-3 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {myIDs.map((row, i) => (
-                <tr key={i} className="border-t hover:bg-blue-50 transition">
-                  <td className="p-3 font-mono">{row.id}</td>
-                  <td className="p-3">{row.title}</td>
-                  <td className="p-3">
-                    <div className="flex gap-2">
-                      {row.media && row.media.map((m, idx) => m.type === 'image' ? (
-                        <img key={idx} src={m.url} alt="media" className="w-10 h-10 rounded object-cover border" />
-                      ) : (
-                        <video key={idx} src={m.url} className="w-10 h-10 rounded border" controls />
-                      ))}
-                    </div>
-                  </td>
-                  <td className="p-3 font-bold text-green-700">₹{row.price}</td>
-                  <td className="p-3">
-                    <select
-                      value={row.status}
-                      onChange={e => handleStatusChange(i, e.target.value)}
-                      className={`px-3 py-1 rounded-full text-xs font-bold border focus:ring-2 focus:ring-blue-400 outline-none transition
-                        ${row.status === 'sold' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}
-                    >
-                      <option value="available">Available</option>
-                      <option value="sold">Sold</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </Card>
+    <div className="mb-8">
+      <h2 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700">All Posted IDs (Sub Admin)</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {postedIDs.map((row) => (
+          <Card key={row._id} className="p-4 sm:p-6 overflow-hidden flex flex-col h-full">
+            <div className="relative bg-gray-100 flex items-center justify-center h-40 sm:h-48 mb-4 rounded-xl">
+              {row.media?.[0]?.type === 'image' ? (
+                <img src={row.media[0].url} alt="media" className="object-contain h-full w-full rounded-xl" />
+              ) : null}
+              {row.status === 'sold out' && (
+                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">SOLD</span>
+              )}
+            </div>
+            <div className="flex-1 flex flex-col">
+              <div className="font-bold text-base sm:text-lg mb-1 text-blue-800">{row.title}</div>
+              <div className="text-gray-500 text-xs sm:text-sm mb-2">ID: {row._id}</div>
+              <div className="text-green-600 font-bold text-lg sm:text-xl mb-2">₹{row.price}</div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{row.role}</span>
+                <span className="text-xs text-gray-500">by You</span>
+              </div>
+            </div>
+            <div>
+              <button
+                className={`w-full py-2 rounded-full font-bold text-white transition text-sm sm:text-base ${
+                  row.status === 'sold out' ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-105'
+                }`}
+                disabled={row.status === 'sold out'}
+              >
+                {row.status === 'sold out' ? 'Sold Out' : 'Buy Now'}
+              </button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
-} 
+}

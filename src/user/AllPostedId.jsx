@@ -1,92 +1,158 @@
+import { useState, useEffect } from 'react';
 import Card from '../components/Card';
 
-const allIDs = [
-  {
-    id: 'BGMI-001',
-    title: 'BGMI Pro ID',
-    postedBy: 'Sub Admin 1',
-    role: 'Sub Admin',
-    media: [
-      { type: 'image', url: 'https://placehold.co/200x200' },
-    ],
-    price: 1200,
-    status: 'sold',
-  },
-  {
-    id: 'BGMI-002',
-    title: 'BGMI Starter ID',
-    postedBy: 'Admin',
-    role: 'Admin',
-    media: [
-      { type: 'image', url: 'https://placehold.co/200x200' },
-    ],
-    price: 800,
-    status: 'available',
-  },
-  {
-    id: 'BGMI-003',
-    title: 'BGMI Elite ID',
-    postedBy: 'Sub Admin 2',
-    role: 'Sub Admin',
-    media: [
-      { type: 'image', url: 'https://placehold.co/200x200' },
-    ],
-    price: 1500,
-    status: 'available',
-  },
-];
-
 export default function AllPostedIDs({ search = '', status = 'all', role = 'all', price = [0, 2000] }) {
-  const filtered = allIDs.filter(
-    (id) =>
+  const [allIDs, setAllIDs] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/ids')
+      .then(res => res.json())
+      .then(data => setAllIDs(data))
+      .catch(console.error);
+  }, []);
+
+  const filtered = allIDs.filter(id => {
+    // postedBy might be an object if populated or just string id
+    const postedByName = id.postedBy?.username || ''; 
+    return (
       (id.title.toLowerCase().includes(search.toLowerCase()) ||
-        id.postedBy.toLowerCase().includes(search.toLowerCase())) &&
+        postedByName.toLowerCase().includes(search.toLowerCase())) &&
       (status === 'all' || id.status === status) &&
       (role === 'all' || id.role === role) &&
-      id.price >= price[0] && id.price <= price[1]
-  );
+      id.price >= price[0] &&
+      id.price <= price[1]
+    );
+  });
+
+  // Temporary BGMI image placeholder
+  const bgmiPlaceholderImage = "https://prod.assets.earlygamecdn.com/images/BGMI-3.5-Update.png?transform=Article+Webp";
+
   return (
     <div className="mb-8">
-      <h2 className="text-xl sm:text-2xl font-bold mb-8 text-blue-700">All Posted IDs</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filtered.length === 0 && (
-          <div className="col-span-full text-center text-gray-400">No products found.</div>
+          <div className="col-span-full text-center py-12">
+            <div className="mx-auto h-16 w-16 text-gray-500 mb-4">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-300">No products found</h3>
+            <p className="mt-2 text-gray-500">Try adjusting your search or filter criteria.</p>
+          </div>
         )}
-        {filtered.map((row, i) => (
-          <Card key={i} className="p-4 sm:p-6 overflow-hidden flex flex-col h-full">
-            <div className="relative bg-gray-100 flex items-center justify-center h-40 sm:h-48 mb-4 rounded-xl">
-              {row.media[0].type === 'image' ? (
-                <img src={row.media[0].url} alt="media" className="object-contain h-full w-full rounded-xl" />
-              ) : (
-                <video src={row.media[0].url} className="object-contain h-full w-full rounded-xl" controls />
-              )}
-              {row.status === 'sold' && (
-                <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-bold">SOLD</span>
-              )}
-            </div>
-            <div className="flex-1 flex flex-col">
-              <div className="font-bold text-base sm:text-lg mb-1 text-blue-800">{row.title}</div>
-              <div className="text-gray-500 text-xs sm:text-sm mb-2">ID: {row.id}</div>
-              <div className="text-green-600 font-bold text-lg sm:text-xl mb-2">₹{row.price}</div>
-              <div className="mt-auto flex gap-2 mb-4">
-                {row.media.length > 1 && row.media.slice(1).map((m, idx) => m.type === 'image' ? (
-                  <img key={idx} src={m.url} alt="media" className="w-8 h-8 sm:w-10 sm:h-10 rounded object-cover border" />
+        {filtered.map((row) => {
+          // Define postedByName here inside the map callback!
+          const postedByName = row.postedBy?.username || 'Unknown';
+
+          return (
+            <div key={row._id} className="group relative bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:shadow-cyan-400/20 transition-all duration-300 overflow-hidden transform hover:-translate-y-1">
+              {/* Product Image */}
+              <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden bg-gray-700 group-hover:opacity-90 transition-opacity">
+                {row.media && row.media.length > 0 && row.media[0]?.type === 'image' ? (
+                  <img 
+                    src={"https://prod.assets.earlygamecdn.com/images/BGMI-3.5-Update.png?transform=Article+Webp"} 
+                    alt={row.title}
+                    className="h-48 w-full object-cover object-center" 
+                  />
+                ) : row.media && row.media.length > 0 && row.media[0]?.type === 'video' ? (
+                  <video 
+                    src={"https://prod.assets.earlygamecdn.com/images/BGMI-3.5-Update.png?transform=Article+Webp"} 
+                    className="h-48 w-full object-cover object-center" 
+                    controls 
+                  />
                 ) : (
-                  <video key={idx} src={m.url} className="w-8 h-8 sm:w-10 sm:h-10 rounded border" controls />
-                ))}
+                  // Use BGMI placeholder image when no media is available
+                  <img 
+                    src={bgmiPlaceholderImage} 
+                    alt="BGMI 3.6 Update"
+                    className="h-48 w-full object-cover object-center" 
+                  />
+                )}
+                {row.status === 'sold out' && (
+                  <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+                    <span className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                      SOLD OUT
+                    </span>
+                  </div>
+                )}
+                {/* Gaming overlay effect */}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
+
+              {/* Product Info */}
+              <div className="p-4">
+                <h3 className="text-sm font-bold text-cyan-400 mb-1 line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                  {row.title}
+                </h3>
+                <p className="text-xs text-gray-500 mb-2">ID: {row._id.slice(-8)}</p>
+                
+                {/* Price */}
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-lg font-bold text-green-400">₹{row.price.toLocaleString()}</p>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    row.status === 'sold out' 
+                      ? 'bg-red-900/50 text-red-300 border border-red-600' 
+                      : 'bg-green-900/50 text-green-300 border border-green-600'
+                  }`}>
+                    {row.status === 'sold out' ? 'Sold' : 'Available'}
+                  </span>
+                </div>
+
+                {/* Seller Info */}
+                <div className="text-xs text-gray-400 mb-3">
+                  <span className="font-medium text-gray-300">Seller:</span> {postedByName} ({row.role})
+                </div>
+
+                {/* Additional Media Thumbnails */}
+                {row.media && row.media.length > 1 && (
+                  <div className="flex gap-1 mb-4">
+                    {row.media.slice(1, 4).map((m, idx) =>
+                      m.type === 'image' ? (
+                        <img
+                          key={idx}
+                          src={m.url}
+                          alt="media"
+                          className="w-8 h-8 rounded object-cover border border-gray-600 hover:border-cyan-400 transition-colors"
+                        />
+                      ) : (
+                        <div
+                          key={idx}
+                          className="w-8 h-8 rounded border border-gray-600 bg-gray-700 flex items-center justify-center hover:border-cyan-400 transition-colors"
+                        >
+                          <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                          </svg>
+                        </div>
+                      )
+                    )}
+                    {row.media.length > 4 && (
+                      <div className="w-8 h-8 rounded border border-gray-600 bg-gray-700 flex items-center justify-center">
+                        <span className="text-xs text-gray-400">+{row.media.length - 4}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Action Button */}
+                <button
+                  className={`w-full py-2 px-4 rounded-md text-sm font-bold transition-all duration-200 transform hover:scale-105 ${
+                    row.status === 'sold out'
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-gray-900 hover:from-cyan-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-800 shadow-lg hover:shadow-cyan-400/25'
+                  }`}
+                  disabled={row.status === 'sold out'}
+                >
+                  {row.status === 'sold out' ? 'Sold Out' : 'Buy Now'}
+                </button>
+              </div>
+
+              {/* Gaming corner accent */}
+              <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <div>
-              <button
-                className={`w-full py-2 rounded-full font-bold text-white transition text-sm sm:text-base ${row.status === 'sold' ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-105'}`}
-                disabled={row.status === 'sold'}
-              >
-                {row.status === 'sold' ? 'Sold Out' : 'Buy Now'}
-              </button>
-            </div>
-          </Card>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
-} 
+}

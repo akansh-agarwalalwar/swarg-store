@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,7 +19,7 @@ export default function AuthForm({ role }) {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/login`, {
+      const res = await fetch(`http://localhost:5000/api/${role}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -221,3 +222,4 @@ export default function AuthForm({ role }) {
     </div>
   );
 } 
+

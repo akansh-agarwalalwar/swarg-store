@@ -1,23 +1,57 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import Card from '../components/Card';
 import SubAdminForm from '../components/SubAdminForm';
 
-export default function ManageSubadmins({ subAdmins, setSubAdmins, deleteSubAdmin }) {
+export default function ManageSubadmins() {
+  const [subAdmins, setSubAdmins] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  // Optionally, fetch subadmins from backend after adding
-  const handleSubAdminAdded = async (form) => {
-    setShowModal(false);
+  // Fetch subadmins from backend
+  const fetchSubAdmins = async () => {
     const token = localStorage.getItem('token');
-    const res = await fetch('http://localhost:5000/api/subadmin/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(form),
-    });
-    // Optionally, refresh subadmin list here
+    try {
+      const res = await fetch('http://localhost:5000/api/subadmin/get-all', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to fetch subadmins');
+      setSubAdmins(data);
+    } catch (err) {
+      console.error('Error fetching subadmins:', err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubAdmins();
+  }, []);
+
+  // Delete subadmin by id
+  const deleteSubAdmin = async (id) => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`http://localhost:5000/api/subadmin/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to delete subadmin');
+
+      // Remove deleted subadmin from the state (immediate UI update)
+      setSubAdmins((prev) => prev.filter((sa) => sa._id !== id));
+    } catch (err) {
+      console.error('Delete failed:', err.message);
+      alert('Failed to delete subadmin: ' + err.message);
+    }
+  };
+
+  const handleSubAdminAdded = async () => {
+    setShowModal(false);
+    await fetchSubAdmins(); // Refresh list after adding
   };
 
   return (
@@ -40,18 +74,28 @@ export default function ManageSubadmins({ subAdmins, setSubAdmins, deleteSubAdmi
             </tr>
           </thead>
           <tbody>
-            {subAdmins.map(sa => (
-              <tr key={sa.id} className="border-t hover:bg-blue-50 transition">
+            {subAdmins.map((sa) => (
+              <tr key={sa._id} className="border-t hover:bg-blue-50 transition">
                 <td className="p-2 sm:p-3">{sa.username}</td>
                 <td className="p-2 sm:p-3">{sa.email}</td>
                 <td className="p-2 sm:p-3 flex flex-col sm:flex-row gap-2">
-                  <button className="bg-red-500 text-white px-3 py-1 rounded-full font-semibold w-full sm:w-auto" onClick={() => deleteSubAdmin(sa.id)}>Delete</button>
+                  <button
+                    className="bg-red-500 text-white px-3 py-1 rounded-full font-semibold w-full sm:w-auto"
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete ${sa.username}?`)) {
+                        deleteSubAdmin(sa._id);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
       {/* Modal for Add Subadmin */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">

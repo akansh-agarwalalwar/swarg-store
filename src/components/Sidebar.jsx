@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 const adminNavItems = [
@@ -16,8 +17,9 @@ const userNavItems = [
 ];
 
 const subAdminNavItems = [
-  { key: 'home', label: 'Home', icon: '🏠' },
-  { key: 'all', label: 'All Products', icon: '🛒' },
+  { key: 'all', label: 'Home', icon: '🏠' },
+  { key: 'bgmi', label: 'Add BGMI', icon: '🛒' },
+  { key: 'valo', label: 'Add Valorent', icon: '🛒' },
   { key: 'youtube', label: 'YouTube Videos', icon: '🎥' },
 ];
 
@@ -73,3 +75,5 @@ export default function Sidebar({ current, onSectionChange, mode = 'admin' }) {
     </>
   );
 }
+
+
